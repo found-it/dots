@@ -32,6 +32,7 @@
     opentofu
     crane
     shellcheck
+    fish
 
     # Kubernetes
     kubectl
@@ -79,10 +80,6 @@
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
   home.file = {
-    # # Building this configuration will create a copy of 'dotfiles/screenrc' in
-    # # the Nix store. Activating the configuration will then make '~/.screenrc' a
-    # # symlink to the Nix store copy.
-    # ".screenrc".source = dotfiles/screenrc;
     ".config/fish/config.fish".source = ./fish/config.fish;
     ".tmux.conf".source = ./tmux/tmux.conf;
 
@@ -121,7 +118,7 @@
     userEmail = "jpetersenames@gmail.com";
     extraConfig = {
       user = {
-        signingKey = "/home/james/.ssh/signing";
+        signingKey = "${config.home.homeDirectory}/.ssh/signing";
       };
       core = {
         editor = "nvim";
@@ -137,4 +134,6 @@
       };
     };
   };
+
+
 }

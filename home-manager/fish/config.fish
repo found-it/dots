@@ -27,9 +27,9 @@ fish_add_path $HOME/.local/bin
 # TODO: Use GOPATH or GOBIN
 fish_add_path $HOME/go/bin
 
-#if command -q starship
-#    starship init fish | source
-#end
+if command -q starship
+    starship init fish | source
+end
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/james/.google-cloud-sdk/path.fish.inc' ]
