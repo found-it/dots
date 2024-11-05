@@ -21,3 +21,6 @@ mkdir -p ~/.config/nvim
 mv ~/.config/nvim{,.bak}
 git clone https://github.com/LazyVim/starter ~/.config/nvim
 rm -rf ~/.config/nvim/.git
+
+mkdir /home/james/.config
+ln -sf $PWD/home-manager $HOME/.config/
