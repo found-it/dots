@@ -125,7 +125,7 @@
         editor = "nvim";
       };
       push = {
-        autoSetupRemove = true;
+        autoSetupRemote = true;
       };
       gpg = {
         format = "ssh";
