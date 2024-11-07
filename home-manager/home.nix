@@ -33,6 +33,7 @@
     crane
     shellcheck
     fish
+    shfmt
 
     # Kubernetes
     kubectl
