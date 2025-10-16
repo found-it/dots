@@ -7,6 +7,7 @@
 alias n='nerdctl'
 alias c='chainctl'
 alias k='kubecolor'
+alias p='sudo protect'
 
 # Kubernetes
 alias kc='kubecolor'
