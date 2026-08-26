@@ -1,0 +1,152 @@
+# ~/.config/starship.toml
+
+# # Get editor completions based on the config schema
+# "$schema" = 'https://starship.rs/config-schema.json'
+#
+# # Inserts a blank line between shell prompts
+# add_newline = true
+#
+# # Replace the '❯' symbol in the prompt with '➜'
+# [character] # The name of the module we are configuring is 'character'
+# success_symbol = '[➜](bold green)' # The 'success_symbol' segment is being set to '➜' with the color 'bold green'
+#
+# [nix_shell]
+# disabled = false
+# impure_msg = '[impure shell](bold red)'
+# pure_msg = '[pure shell](bold green)'
+# unknown_msg = '[nix shell](bold yellow)'
+# format = 'via [☃️ $state( \($name\))](bold blue) '
+# heuristic = true
+# ~/.config/starship.toml
+"$schema" = 'https://starship.rs/config-schema.json'
+
+# ── Prompt layout ────────────────────────────────────────────
+# Minimal two-line: info on top, input arrow below
+format = """
+$directory\
+$git_branch\
+$git_status\
+$git_metrics\
+$nix_shell\
+$docker_context\
+$kubernetes\
+$aws\
+$fill\
+$cmd_duration\
+$time\
+$line_break\
+$character"""
+
+add_newline = true
+command_timeout = 2000
+palette = 'gruvbox_dark'
+
+# ── Gruvbox Dark palette ────────────────────────────────────
+[palettes.gruvbox_dark]
+fg0     = '#fbf1c7'
+fg1     = '#ebdbb2'
+bg1     = '#3c3836'
+bg2     = '#504945'
+bg3     = '#665c54'
+red     = '#cc241d'
+green   = '#98971a'
+yellow  = '#d79921'
+blue    = '#458588'
+purple  = '#b16286'
+aqua    = '#689d6a'
+orange  = '#d65d0e'
+gray    = '#928374'
+
+# ── Fill (pushes right-aligned items) ───────────────────────
+[fill]
+symbol = ' '
+
+# ── Directory ───────────────────────────────────────────────
+[directory]
+style = 'bold yellow'
+format = '[$path]($style)[$read_only]($read_only_style) '
+truncation_length = 3
+truncation_symbol = '…/'
+read_only = ' 󰌾'
+
+[directory.substitutions]
+'Documents' = '󰈙 '
+'Downloads' = ' '
+'Projects'  = '󰲋 '
+
+# ── Git ─────────────────────────────────────────────────────
+[git_branch]
+symbol = ' '
+style = 'fg:aqua'
+format = '[$symbol$branch]($style) '
+truncation_length = 24
+
+[git_status]
+style = 'fg:orange'
+format = '([$all_status$ahead_behind]($style) )'
+
+[git_metrics]
+disabled = false
+added_style = 'fg:green'
+deleted_style = 'fg:red'
+format = '([+$added]($added_style) )([-$deleted]($deleted_style) )'
+
+# ── Nix shell (your existing config) ────────────────────────
+[nix_shell]
+disabled = false
+impure_msg = '[impure](bold red)'
+pure_msg = '[pure](bold green)'
+unknown_msg = '[nix](bold yellow)'
+format = 'via [☃️ $state( \($name\))](bold blue) '
+heuristic = true
+
+# ── Docker ──────────────────────────────────────────────────
+[docker_context]
+symbol = '󰡨 '
+style = 'fg:blue'
+format = '[$symbol$context]($style) '
+only_with_files = true
+
+# ── Kubernetes ──────────────────────────────────────────────
+[kubernetes]
+disabled = false
+symbol = '󱃾 '
+style = 'fg:purple'
+format = '[$symbol$context( \($namespace\))]($style) '
+
+[[kubernetes.contexts]]
+context_pattern = 'arn:aws:eks:[\w-]+:(?P<account>\d+):cluster/(?P<cluster>.+)'
+context_alias = '${account}/${cluster}'
+
+# ── AWS ─────────────────────────────────────────────────────
+[aws]
+symbol = '󰸏 '
+style = 'fg:orange'
+format = '[$symbol($profile)( \($region\))]($style) '
+
+# ── Command duration (right side) ───────────────────────────
+[cmd_duration]
+min_time = 2_000
+style = 'fg:gray'
+format = '[$duration]($style) '
+show_milliseconds = false
+
+# ── Time (right side) ──────────────────────────────────────
+[time]
+disabled = false
+time_format = '%H:%M'
+style = 'fg:bg3'
+format = '[$time]($style)'
+
+# ── Input character ─────────────────────────────────────────
+[character]
+success_symbol = '[➜](bold green)'
+error_symbol = '[➜](bold red)'
+vimcmd_symbol = '[](bold aqua)'
+
+# ── Disabled modules (keep it clean) ────────────────────────
+[package]
+disabled = true
+
+[line_break]
+disabled = false
