@@ -36,6 +36,7 @@
     shellcheck
     fish
     shfmt
+    zizmor
 
     # Kubernetes
     kubectl
@@ -64,7 +65,6 @@
     neovim
     lazygit
     luarocks
-
 
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the
@@ -117,10 +117,10 @@
   programs.home-manager.enable = true;
   programs.git = {
     enable = true;
-    userName = "James Petersen";
-    userEmail = "jpetersenames@gmail.com";
-    extraConfig = {
+    settings = {
       user = {
+        name = "James Petersen";
+        email = "jpetersenames@gmail.com";
         signingKey = "${config.home.homeDirectory}/.ssh/signing";
       };
       core = {

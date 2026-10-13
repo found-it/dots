@@ -15,10 +15,10 @@ alias wk='watch -c kubecolor --force-colors'
 alias kim='kubectl get pods -o custom-columns=CONTAINER:.spec.containers[0].name,IMAGE:.spec.containers[0].image'
 
 # File listing
-alias ls='eza --icons'
-alias lsg='eza --long --header --icons --git'
-alias lst='eza --icons --tree'
-alias lsi='eza --icons --long --octal-permissions --header'
+alias ls='eza --icons=always'
+alias lsg='eza --long --header --icons=always --git'
+alias lst='eza --icons=always --tree'
+alias lsi='eza --icons=always --long --octal-permissions --header'
 alias cat='bat -p'
 alias dsh='docker run -it --entrypoint sh'
 
