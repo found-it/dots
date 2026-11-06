@@ -150,6 +150,17 @@ in
     enableFishIntegration = true;
   };
 
+  # ~/.ssh/authentication is generated and registered with GitHub by install.sh.
+  programs.ssh = {
+    enable = true;
+    enableDefaultConfig = false;
+    settings."github.com" = {
+      User = "git";
+      IdentityFile = "~/.ssh/authentication";
+      IdentitiesOnly = true;
+    };
+  };
+
   programs.git = {
     enable = true;
     settings = {
