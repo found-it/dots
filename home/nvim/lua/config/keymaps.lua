@@ -1,0 +1,7 @@
+-- Keymaps are automatically loaded on the VeryLazy event
+-- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
+-- Add any additional keymaps here
+-- Rust runnables/testables live under <leader>cR, set up in lua/plugins/rust.lua.
+-- (<leader>ccc ran `:Cargo run`, a command from rust-lang/rust.vim, which is not
+-- installed -- and <leader>cc is LazyVim's "Run Codelens" in any buffer with an
+-- LSP attached, so the prefix never reached a third keystroke.)

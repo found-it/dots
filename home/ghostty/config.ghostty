@@ -1,0 +1,266 @@
+# =============================================================================
+# Ghostty config — reviewed 2026-08-26 against Ghostty 1.3.1 / macOS 26.5.2
+# Previous version backed up to: config.pre-2026-08-26.bak
+#
+# CHANGELOG for this pass:
+#   FIXED    theme: removed dead `theme = "Desert"` line (was silently
+#            overridden by the Gruvbox line below it), replaced with a
+#            light/dark pair.
+#   RENAMED  background-blur-radius -> background-blur (old name still works
+#            as a deprecated alias, but the new name is canonical).
+#   ADDED    background-opacity-cells, alpha-blending  (transparency + text
+#            rendering fixes that specifically affect tmux/neovim)
+#   ADDED    shell-integration-features                (SSH terminfo)
+#   ADDED    notify-on-command-finish*                  (long-build alerts)
+#   ADDED    minimum-contrast, mouse-hide-while-typing, resize-overlay,
+#            window-save-state, scrollbar, window-padding-balance,
+#            undo-timeout
+#   UNCHANGED  fonts, macos-option-as-alt, alt+arrow unbinds,
+#              mouse-scroll-multiplier, link-url, shift+enter
+#
+# Discovery tips:
+#   ghostty +show-config --default --docs   # every option, documented
+#   ghostty +list-themes                    # theme browser
+#   cmd+shift+p                             # command palette
+# =============================================================================
+
+
+# -----------------------------------------------------------------------------
+# Theme & color
+# -----------------------------------------------------------------------------
+
+# `theme` accepts a light/dark pair, so Ghostty follows the macOS appearance
+# instead of you hand-editing this line. Format: light:<name>,dark:<name>
+theme = light:Gruvbox Light Hard,dark:Gruvbox Dark Hard
+
+# Other themes worth revisiting (run `ghostty +list-themes` to preview):
+# theme = light:Catppuccin Latte,dark:Catppuccin Mocha
+# theme = light:Rose Pine Dawn,dark:Rose Pine
+# theme = Melange Dark
+# theme = Kanagawa Wave
+# theme = Earthsong
+# theme = Dracula+
+# theme = Matte Black
+# theme = Desert
+
+# Forces a minimum WCAG contrast ratio between foreground and background,
+# per-cell. Guards against text rendered the same color as its background
+# by a bad colorscheme or stale LS_COLORS. 1.1 is the "never invisible"
+# floor; 3+ starts aggressively pushing text toward pure black/white.
+minimum-contrast = 1.1
+
+# Use the bright palette variant for bold text (bold red -> bright red).
+# This replaces the removed `bold-is-bright` option. Taste-dependent —
+# uncomment if you preferred the old behavior.
+# bold-color = bright
+
+
+# -----------------------------------------------------------------------------
+# Transparency & blur
+# -----------------------------------------------------------------------------
+
+# background-opacity = 0.9
+
+# RENAMED from `background-blur-radius`. Integer = blur intensity, and 20 is
+# the documented sweet spot; higher values risk rendering/perf oddities.
+background-blur = 20
+
+# macOS 26+ only (you're on 26.5.2): native Liquid Glass materials instead of
+# a plain gaussian blur. These imply background-blur = true.
+# background-blur = macos-glass-regular
+background-blur = macos-glass-clear
+
+# THE IMPORTANT ONE FOR TMUX + NEOVIM.
+# By default `background-opacity` applies only to the *window* background.
+# Any cell with an explicit background color set stays fully opaque — and
+# tmux status lines and neovim repaint cell backgrounds constantly, which
+# is why transparency appears to "stop working" the moment you're inside
+# them. This applies the opacity to every cell regardless. (Since 1.2.0)
+background-opacity-cells = true
+
+# Color space used for alpha blending. macOS defaults to `native`, which
+# leaves dark halos around glyph edges on high-contrast color pairs — i.e.
+# exactly red/green git diffs and neovim diagnostics. `linear-corrected`
+# removes the halos while keeping text weight visually identical to native.
+# (Plain `linear` is the one that makes dark text look too thin.) (Since 1.1.0)
+alpha-blending = linear-corrected
+
+
+# -----------------------------------------------------------------------------
+# Fonts
+# -----------------------------------------------------------------------------
+
+font-family = "SeriousShanns Nerd Font Mono"
+font-family-italic = "SeriousShanns Nerd Font Mono"
+font-family-bold-italic = "SeriousShanns Nerd Font Mono"
+
+# font-family = "Monaspace Neon Var"
+# font-family-italic = "Monaspace Radon Var"
+# font-family-bold-italic = "Monaspace Radon Var"
+# font-thicken = true
+
+# Note: `font-shaping-break = cursor` is already the default. It breaks font
+# shaping runs under the cursor so ligatures don't reflow while you're editing
+# a line in neovim. No setting needed — just don't set it to `no-cursor`.
+
+# To kill programming ligatures entirely: font-feature = -calt
+# For all ligatures:                      font-feature = -calt, -liga, -dlig
+
+# window-padding-x = 10
+# window-padding-y = 10
+
+# The viewport is rarely an exact multiple of the cell size. This spreads the
+# leftover pixels across all four edges instead of dumping them all on the
+# right and bottom. Applies with or without explicit window-padding.
+window-padding-balance = true
+
+
+# -----------------------------------------------------------------------------
+# Shell integration
+# -----------------------------------------------------------------------------
+
+# All three of these default to OFF.
+#   ssh-terminfo - remote hosts don't have `xterm-ghostty` terminfo, so tmux
+#                  and neovim degrade over SSH. This installs it on connect
+#                  via infocmp/tic and caches per-host (see `ghostty
+#                  +ssh-cache` to manage that cache).
+#   ssh-env      - fallback path: downgrades TERM to xterm-256color and
+#                  forwards COLORTERM/TERM_PROGRAM if terminfo install fails.
+#                  Requires the remote sshd_config to accept those vars.
+#   sudo         - wraps sudo so terminfo survives into the sudo environment.
+# (ssh-* since 1.2.0)
+shell-integration-features = ssh-terminfo,ssh-env,sudo
+
+
+# -----------------------------------------------------------------------------
+# Notifications for long-running commands  (new in 1.3)
+# -----------------------------------------------------------------------------
+
+# Notify when a command finishes, but only if that surface isn't focused —
+# i.e. you tabbed away from a build. Set to `always` to always notify.
+#
+# CAVEAT: this rides on OSC 133 prompt marking, and tmux sits between your
+# shell and Ghostty. If tmux swallows the sequences this will just be
+# silently inert. Test with `sleep 40` in a background window before relying
+# on it; if it doesn't fire, that's the reason.
+notify-on-command-finish = unfocused
+
+# Default is `bell,no-notify`. A real macOS notification is more useful than
+# a bell for a build that finished five minutes ago.
+notify-on-command-finish-action = no-bell,notify
+
+# Minimum runtime before a command is considered notify-worthy (default 5s).
+notify-on-command-finish-after = 30s
+
+
+# -----------------------------------------------------------------------------
+# Window / UI chrome
+# -----------------------------------------------------------------------------
+
+# Transient popup showing terminal dimensions during a resize. Default is
+# `after-first`. Pure noise if you resize often.
+resize-overlay = never
+
+# Default `system` shows a scrollbar while scrolling or hovering the gutter.
+# tmux has its own copy-mode scrollback, so the widget is redundant.
+scrollbar = never
+
+# Restore window position, size, tabs and splits across restarts. The macOS
+# default only saves state on a forced quit; `always` saves on every exit.
+# (Working-directory restore needs shell integration, which you have.)
+window-save-state = always
+
+# Hide the mouse cursor as soon as you start typing; it reappears on any
+# mouse input. Nice when the pointer parks itself over neovim text.
+mouse-hide-while-typing = true
+
+# `hidden` reclaims the titlebar row but — unlike the `window-decoration =
+# false` you had commented out — keeps the window frame and rounded corners.
+# Trade-off: you lose the titlebar as a drag handle (option+click the frame
+# edges instead). You'd previously backed away from this, so left off.
+macos-titlebar-style = hidden
+
+# Ghostty's window shadow can look wrong against heavy transparency.
+# macos-window-shadow = false
+
+# Fun: official icon variants, hand-drawn. blueprint, chalkboard, microchip,
+# glass, holographic, paper, retro, xray
+macos-icon = xray
+
+
+# -----------------------------------------------------------------------------
+# Undo  (new in 1.2)
+# -----------------------------------------------------------------------------
+
+# cmd+z undoes closing a tab/split within this window (default 5s), which is
+# often too short to notice the mistake.
+#
+# CAVEAT: an undoable surface hasn't actually exited yet, so its processes
+# linger for the full timeout. Don't set this to anything large.
+undo-timeout = 30s
+
+# tmux sessions survive a window close, so the close confirmation is pure
+# friction — and it fires *every* time, because an attached tmux always
+# registers as "a process is still running". Your call on the safety net.
+# confirm-close-surface = false
+
+
+# -----------------------------------------------------------------------------
+# Scrollback search  (new in 1.3)
+# -----------------------------------------------------------------------------
+# No config needed — these are already bound by default, listed here purely
+# because the feature is easy to miss:
+#   cmd+f              start_search
+#   cmd+e              search_selection
+#   cmd+g / cmd+shift+g  navigate_search next / previous
+#   escape             end_search
+# Covers the native scrollback, which is the region tmux copy-mode can't see.
+
+
+# -----------------------------------------------------------------------------
+# Quick terminal
+# -----------------------------------------------------------------------------
+# Drop-down scratch terminal. Ships with NO default keybind, so it's
+# invisible unless you go looking. `global:` means it works even when Ghostty
+# isn't focused — macOS will prompt for permission the first time, and
+# changing the position requires a full restart.
+# keybind = global:cmd+grave_accent=toggle_quick_terminal
+# quick-terminal-position = top
+# quick-terminal-autohide = true
+
+
+# -----------------------------------------------------------------------------
+# Keys & input
+# -----------------------------------------------------------------------------
+
+# Treat option as alt so terminal programs receive real alt sequences,
+# instead of macOS turning option+b into "∫".
+macos-option-as-alt = true
+
+# Ghostty binds these to esc:b / esc:f (shell word-motion) by default.
+# Unbinding passes the raw sequences through to tmux and neovim instead.
+keybind = alt+left=unbind
+keybind = alt+right=unbind
+
+# Sends ESC+CR, which lets TUIs distinguish shift+enter from plain enter.
+keybind = shift+enter=text:\x1b\r
+
+# Key tables — leader-key / chord bindings, new in 1.3. Defined as
+# `<table>/<binding>` and entered via activate_key_table (sticky) or
+# activate_key_table_once (one-shot). Lookup falls outward, so default
+# bindings stay live inside a table unless you explicitly unbind them.
+# Left off deliberately: this competes with your tmux prefix for muscle
+# memory. Example if you ever want it:
+#   keybind = ctrl+a=activate_key_table_once:leader
+#   keybind = leader/c=new_tab
+#   keybind = leader/v=new_split:right
+
+
+# -----------------------------------------------------------------------------
+# Mouse & links
+# -----------------------------------------------------------------------------
+
+# Slow down scrolling
+mouse-scroll-multiplier = 0.2
+
+link-url = true
